@@ -75,16 +75,22 @@
     RAIDERS: "#ff3b30"
   };
 
-  const map = L.map('map', {
-    crs: L.CRS.Simple,
-    minZoom: 0,
-    maxZoom: MAX_ZOOM,
-    zoomSnap: 0.25
-  });
+ // create map first (без maxBounds)
+const map = L.map("map", {
+  crs: L.CRS.Simple,
+  minZoom: 0,
+  maxZoom: MAX_ZOOM,
+  zoomSnap: 0.25
+});
 
-  const bounds = [[0,0], [MAP_SIZE, MAP_SIZE]];
-  map.fitBounds(bounds);
+// ✅ Правильні bounds для tiles через unproject
+const southWest = map.unproject([0, IMAGE_SIZE], MAX_ZOOM);
+const northEast = map.unproject([IMAGE_SIZE, 0], MAX_ZOOM);
+const bounds = L.latLngBounds(southWest, northEast);
 
+map.setMaxBounds(bounds);
+map.fitBounds(bounds);
+  
   // Base tile layer (XYZ)  ✅ FIXED: no TMS flip
   const livoniaTiles = L.tileLayer("./tiles/{z}/{x}/{y}.jpg", {
     minZoom: 0,
