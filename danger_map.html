@@ -136,31 +136,12 @@
   map.on("zoomend", () => map.panInsideBounds(bounds, { animate: false }));
 
   // ===== HELPERS =====
-  /**
-   * IMPORTANT:
-   * Your input coordinates (x,z) in this file are DayZ world coordinates (meters),
-   * NOT image pixels. Livonia/Enoch world size is ~12800m.
-   * We must convert meters -> pixels on the 18000x18000 tile image.
-   */
-  const WORLD_SIZE = 12800;              // meters (0..12800)
-  const SCALE = MAP_SIZE / WORLD_SIZE;   // pixels per meter
+  function pxToLatLng(x, z){ return map.unproject([x, z], MAX_NATIVE_ZOOM); }
 
-  // Convert DayZ meters to image pixels
-  function dzToPx(xMeters, zMeters) {
-    return [xMeters * SCALE, zMeters * SCALE];
-  }
-
-  // Convert DayZ meters to Leaflet LatLng (CRS.Simple)
-  function dzToLatLng(xMeters, zMeters) {
-    const [px, pz] = dzToPx(xMeters, zMeters);
-    return map.unproject([px, pz], MAX_NATIVE_ZOOM);
-  }
-
-  // Convert radius in meters -> radius in map units
-  function metersToMapRadius(centerXM, centerZM, radiusMeters) {
-    const c = dzToLatLng(centerXM, centerZM);
-    const e = dzToLatLng(centerXM + radiusMeters, centerZM);
-    return c.distanceTo(e);
+  function pxRadiusToMapRadius(centerX, centerZ, radiusPx){
+    const c = pxToLatLng(centerX, centerZ);
+    const edge = pxToLatLng(centerX + radiusPx, centerZ);
+    return c.distanceTo(edge);
   }
 
   function dangerLabel(tier) {
@@ -207,164 +188,205 @@
     L.polyline([b1, b2], { weight: 1, opacity: 0.12 }).addTo(layerGrid);
   }
 
-  // ===== DATA =====
+  // ===== DATA (AUTO IMPORT) =====
 
-  // Cities / Danger Zones
-  const zones = [
-    // Rangers
-    { name: "Brena",   faction: "Blackwood Rangers", tier: "MEDIUM", color: COLORS.RANGERS, x: 6467,  z: 11354, radius: 500, ai: 5 },
-    { name: "Sitnik",  faction: "Blackwood Rangers", tier: "MEDIUM", color: COLORS.RANGERS, x: 11634, z: 9605,  radius: 200, ai: 5 },
-    { name: "Topolin", faction: "Blackwood Rangers", tier: "MEDIUM", color: COLORS.RANGERS, x: 1524,  z: 7412,  radius: 500, ai: 5 },
-    { name: "Nadbor",  faction: "Blackwood Rangers", tier: "MEDIUM", color: COLORS.RANGERS, x: 5959,  z: 4113,  radius: 500, ai: 5 },
+// Load Expansion AI JSON directly from same folder (GitHub Pages)
+async function loadJSON(path){
+  const res = await fetch(path, { cache: 'no-store' });
+  if (!res.ok) throw new Error(`${path} HTTP ${res.status}`);
+  return await res.json();
+}
 
-    // Wardens
-    { name: "Glinishka", faction: "Livonian Wardens", tier: "LOW", color: COLORS.WARDENS, x: 4999, z: 9955, radius: 200, ai: 3 },
-    { name: "Zalesie",   faction: "Livonian Wardens", tier: "LOW", color: COLORS.WARDENS, x: 907,  z: 5550, radius: 200, ai: 3 },
-    { name: "Lukow",     faction: "Livonian Wardens", tier: "LOW", color: COLORS.WARDENS, x: 3632, z: 11774, radius: 200, ai: 3 },
-    { name: "Polana",    faction: "Livonian Wardens", tier: "LOW", color: COLORS.WARDENS, x: 3360, z: 2018, radius: 200, ai: 3 },
+// Convert faction name to color
+function factionColor(f){
+  const s = String(f||'').toLowerCase();
+  if (s.includes('warden')) return COLORS.WARDENS;
+  if (s.includes('ranger')) return COLORS.RANGERS;
+  if (s.includes('ironfang') || s.includes('raider')) return COLORS.RAIDERS;
+  return '#9aa4b2';
+}
 
-    // Raiders
-    { name: "Bunker", faction: "Ironfang Raiders", tier: "EXTREME", color: COLORS.RAIDERS, x: 715, z: 1144, radius: 320, ai: 8 }
-  ];
+function factionTier(f){
+  const s = String(f||'').toLowerCase();
+  if (s.includes('warden')) return 'LOW';
+  if (s.includes('ranger')) return 'MEDIUM';
+  if (s.includes('ironfang') || s.includes('raider')) return 'EXTREME';
+  return 'MEDIUM';
+}
 
-  // Patrol routes (example)
-  const routes = [
-    {
-      name: "Ironfang Bunker Route",
-      faction: "Ironfang Raiders",
-      color: COLORS.RAIDERS,
-      points: [
-        [541, 1097],
-        [888, 1190],
-        [715, 1144]
-      ],
-      style: { weight: 3, opacity: 0.85, dashArray: "8 10" }
-    },
-    {
-      name: "Nadbor Street Patrol (example)",
-      faction: "Blackwood Rangers",
-      color: COLORS.RANGERS,
-      points: [
-        [5700, 3950],
-        [6200, 4020],
-        [6350, 4300],
-        [6000, 4450],
-        [5700, 4200]
-      ],
-      style: { weight: 3, opacity: 0.8 }
-    }
-  ];
+function patrolCenterMeters(waypoints){
+  // Average X/Z
+  let sx=0, sz=0, n=0;
+  for (const w of waypoints||[]){
+    if (!w || w.length < 3) continue;
+    sx += Number(w[0]);
+    sz += Number(w[2]);
+    n++;
+  }
+  if (!n) return null;
+  return { x: sx/n, z: sz/n };
+}
 
-  // POI (Police/Med/Fire etc)
-  const pois = [
-    { name: "Nadbor Police", type: "Police", x: 6020, z: 4200 },
-    { name: "Nadbor Med", type: "Med", x: 5850, z: 4320 },
+// ===== RENDERING (AUTO IMPORT) =====
 
-    { name: "Topolin Police", type: "Police", x: 1600, z: 7600 },
-    { name: "Topolin Med", type: "Med", x: 1500, z: 7800 },
+// Convert DayZ meters -> pixel -> latlng
+const WORLD_SIZE = 12800;            // Livonia meters (0..12800)
+const SCALE = MAP_SIZE / WORLD_SIZE; // px per meter
 
-    { name: "Sitnik Police", type: "Police", x: 11720, z: 9660 },
-    { name: "Sitnik Med", type: "Med", x: 11540, z: 9750 }
-  ];
+function dzToLatLng(xMeters, zMeters){
+  const px = xMeters * SCALE;
+  const pz = zMeters * SCALE;
+  return map.unproject([px, pz], MAX_NATIVE_ZOOM);
+}
 
-  // ===== RENDERING =====
+function metersToRadius(centerXM, centerZM, radiusMeters){
+  const c = dzToLatLng(centerXM, centerZM);
+  const e = dzToLatLng(centerXM + radiusMeters, centerZM);
+  return c.distanceTo(e);
+}
 
-  // Faction zones + labels + heat
-  function renderZone(z) {
-    const center = dzToLatLng(z.x, z.z);
+function makeCityLabel(name, tier, x, z){
+  const ll = dzToLatLng(x, z);
+  L.marker(ll, { interactive: false, opacity: 0.95 })
+    .bindTooltip(name, { permanent: true, direction: "center", className: labelClass(tier) })
+    .addTo(layerLabels);
+}
 
-    // zone (danger)
-    L.circle(center, {
-      // User request: make zones x3 larger
-      radius: metersToMapRadius(z.x, z.z, z.radius * 3),
-      color: z.color,
+function renderPatrol(p){
+  const name = p.Name || 'Patrol';
+  const faction = p.Faction || '';
+  const color = factionColor(faction);
+  const tier = factionTier(faction);
+
+  const wps = Array.isArray(p.Waypoints) ? p.Waypoints : [];
+  const pts = wps
+    .filter(w => Array.isArray(w) && w.length >= 3)
+    .map(w => dzToLatLng(Number(w[0]), Number(w[2])));
+
+  if (pts.length < 2) return;
+
+  // Route polyline
+  L.polyline(pts, {
+    color: color,
+    weight: 3,
+    opacity: 0.85,
+    dashArray: (tier === 'EXTREME') ? '8 10' : null
+  }).addTo(layerRoutes).bindTooltip(name);
+
+  // Waypoint markers
+  pts.forEach((ll, idx) => {
+    L.circleMarker(ll, {
+      radius: idx === 0 ? 7 : 5,
+      weight: 2,
+      color: color,
+      fillColor: color,
+      fillOpacity: 1
+    }).addTo(layerRoutes)
+      .bindPopup(`<b>${name}</b><br/>${faction || ''}<br/>WP ${idx+1}`);
+  });
+
+  // City center marker based on patrol average
+  const c = patrolCenterMeters(wps);
+  if (c){
+    const llc = dzToLatLng(c.x, c.z);
+
+    // Big danger zone circle (x3 as requested)
+    const baseRadius = (p.MaxDistRadius && p.MaxDistRadius > 0) ? Number(p.MaxDistRadius) : 500;
+    const radius = baseRadius * 3;
+
+    L.circle(llc, {
+      radius: metersToRadius(c.x, c.z, radius),
+      color: color,
       weight: 2,
       opacity: 0.9,
-      fillColor: z.color,
+      fillColor: color,
       fillOpacity: 0.18
     }).addTo(layerFactions);
 
-    // marker
-    L.circleMarker(center, {
+    L.circleMarker(llc, {
       radius: 7,
-      color: z.color,
-      fillColor: z.color,
+      color: color,
+      fillColor: color,
       fillOpacity: 1,
       weight: 2
-    }).bindPopup(popupHTML(z)).addTo(layerFactions);
+    }).addTo(layerFactions)
+      .bindPopup(`<b>${name}</b><br/><b>Faction:</b> ${faction}<br/><b>AI:</b> ${p.NumberOfAI ?? ''}`);
 
-    // label
-    L.marker(center, { interactive: false, opacity: 0.95 })
-      .bindTooltip(z.name, { permanent: true, direction: "center", className: labelClass(z.tier) })
-      .addTo(layerLabels);
-
-    // heat
-    const intensity = (z.tier === "LOW") ? 0.9 : (z.tier === "MEDIUM" ? 1.25 : 1.7);
+    // Heat
+    const intensity = (tier === "LOW") ? 0.9 : (tier === "MEDIUM" ? 1.25 : 1.7);
     const steps = 7;
-    for (let i=1; i<=steps; i++) {
-      const k = i/steps;
-      const radiusMeters = (z.radius * 3) * (0.3 + 1.1*k);
+    for (let i=1; i<=steps; i++){
+      const k=i/steps;
+      const rMeters = radius * (0.3 + 1.1*k);
       const opacity = (0.16 * intensity) * (1.0 - k*0.85);
-      L.circle(center, {
-        radius: metersToMapRadius(z.x, z.z, radiusMeters),
-        color: z.color,
+      L.circle(llc, {
+        radius: metersToRadius(c.x, c.z, rMeters),
+        color: color,
         weight: 0,
         opacity: 0,
-        fillColor: z.color,
+        fillColor: color,
         fillOpacity: Math.max(0, opacity)
       }).addTo(layerHeat);
     }
+
+    // Label (city name from patrol prefix)
+    const city = String(name).split('_')[0] || name;
+    makeCityLabel(city, tier, c.x, c.z);
   }
+}
 
-  zones.forEach(renderZone);
+function renderRoamingLocation(loc){
+  const name = loc.Name || 'Location';
+  const pos = loc.Position || [];
+  if (!Array.isArray(pos) || pos.length < 3) return;
+  const x = Number(pos[0]);
+  const z = Number(pos[2]);
+  const r = Number(loc.Radius || 100);
 
-  // Routes
-  function renderRoute(r) {
-    const latlngs = r.points.map(p => dzToLatLng(p[0], p[1]));
-    const style = Object.assign({ color: r.color }, r.style || {});
-    L.polyline(latlngs, style).addTo(layerRoutes).bindTooltip(r.name);
-    // endpoints
-    r.points.forEach((p, idx) => {
-      L.circleMarker(dzToLatLng(p[0], p[1]), {
-        radius: idx === 0 ? 7 : 5,
-        weight: 2,
-        color: r.color,
-        fillColor: r.color,
-        fillOpacity: 1
-      }).addTo(layerRoutes).bindPopup(`<b>${r.name}</b><br/>Point ${idx+1}<br/>X${p[0]} Z${p[1]}`);
-    });
+  const ll = dzToLatLng(x, z);
+
+  // POI circle
+  L.circle(ll, {
+    radius: metersToRadius(x, z, r),
+    color: COLORS.POI,
+    weight: 1,
+    opacity: 0.8,
+    fillColor: COLORS.POI,
+    fillOpacity: 0.08
+  }).addTo(layerPOI);
+
+  L.circleMarker(ll, {
+    radius: 5,
+    weight: 2,
+    color: COLORS.POI,
+    fillColor: COLORS.POI,
+    fillOpacity: 1
+  }).addTo(layerPOI)
+    .bindPopup(`<b>${name}</b><br/>Radius: ${r}m<br/>X${x.toFixed(1)} Z${z.toFixed(1)}`);
+}
+
+// MAIN: import JSON + render
+(async function(){
+  try {
+    const [loc, pat] = await Promise.all([
+      loadJSON('./AILocationSettings.json'),
+      loadJSON('./AIPatrolSettings.json')
+    ]);
+
+    // Patrols => zones + routes + labels
+    const patrols = Array.isArray(pat.Patrols) ? pat.Patrols : [];
+    patrols.forEach(renderPatrol);
+
+    // RoamingLocations => POI layer
+    const roaming = Array.isArray(loc.RoamingLocations) ? loc.RoamingLocations : [];
+    roaming.filter(r => r && r.Enabled !== 0).forEach(renderRoamingLocation);
+
+  } catch (e) {
+    console.error('Import failed:', e);
+    alert('ERROR: Не вдалось завантажити AILocationSettings.json / AIPatrolSettings.json.\nПеревір що файли лежать поруч з HTML на GitHub Pages.');
   }
-
-  routes.forEach(renderRoute);
-
-  // POI
-  function poiIcon(type){
-    // simple color by type
-    const c = (type === "Police") ? "#67b7ff" : (type === "Med" ? "#ff5bd6" : "#ffffff");
-    return { color: c, fillColor: c };
-  }
-
-  function renderPOI(p) {
-    const ll = dzToLatLng(p.x, p.z);
-    const ic = poiIcon(p.type);
-
-    L.circleMarker(ll, {
-      radius: 6,
-      weight: 2,
-      color: ic.color,
-      fillColor: ic.fillColor,
-      fillOpacity: 1
-    }).addTo(layerPOI)
-      .bindPopup(`<b>${p.name}</b><br/>Type: ${p.type}<br/>X${p.x} Z${p.z}`);
-
-    L.marker(ll, { interactive: false, opacity: 0.95 })
-      .bindTooltip(p.name, { permanent: false, direction: "top", className: "poi-label", offset: [0,-10] })
-      .addTo(layerPOI);
-  }
-
-  pois.forEach(renderPOI);
-
-  // ===== DEFAULT ON =====
+})();
+// ===== DEFAULT ON =====
   layerFactions.addTo(map);
   layerLabels.addTo(map);
   layerRoutes.addTo(map);
