@@ -3,131 +3,385 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Livonia AI Map</title>
+  <title>FRoneX Livonia Danger Map</title>
+
+  <meta name="description" content="Interactive Livonia danger map (Wardens / Blackwood Rangers / Ironfang Raiders) with layer toggles." />
+  <meta property="og:title" content="FRoneX Livonia Danger Map" />
+  <meta property="og:description" content="Interactive map: danger zones, patrol routes, POI, labels. Toggle layers." />
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <style>
     html, body { height: 100%; margin: 0; background:#0b0f14; }
     #map { height: 100%; width: 100%; }
-    .leaflet-control-layers { font-size: 14px; }
+
+    .legend {
+      background: rgba(0,0,0,0.75);
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.35;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      max-width: 360px;
+    }
+    .legend h3 { margin: 0 0 10px; font-size: 15px; }
+    .row { display: flex; align-items: center; gap: 10px; margin: 7px 0; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+    .muted { opacity: 0.85; font-size: 12px; margin-top: 10px; }
+
+    .leaflet-control-layers {
+      border-radius: 14px !important;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+    .leaflet-control-layers-expanded {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Labels */
+    .city-label {
+      font-weight: 900;
+      font-size: 14px;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.85);
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
+    }
+    .city-label.low { color: #b9ffcc; }
+    .city-label.med { color: #ffd28a; }
+    .city-label.ext { color: #ffb0b0; }
+
+    /* POI labels */
+    .poi-label {
+      font-weight: 800;
+      font-size: 12px;
+      color: #e8f1ff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+      background: rgba(0,0,0,0.25);
+      border-radius: 8px;
+      padding: 2px 6px;
+      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+    }
   </style>
 </head>
+
 <body>
 <div id="map"></div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // ==== CONFIG ====
-  const IMAGE_SIZE = 18000;        // full map size in pixels (square)
-  const TILE_SIZE = 256;
-  const MIN_ZOOM = 0;
-  const MAX_ZOOM = 6;              // your chosen cap
-  const MAX_NATIVE_ZOOM = 6;       // highest zoom level that has real tiles
-  const TILE_URL = "./tiles/{z}/{x}/{y}.jpg";
+  /**
+   * Tiles: /tiles/{z}/{x}/{y}.jpg
+   * Generator output = XYZ (y вниз) => tms: false
+   */
 
-  // ==== MAP ====
-  const map = L.map("map", {
+  const MAP_SIZE = 18000;     // px
+  const TILE_SIZE = 256;
+
+  // maxNativeZoom = реальний максимум у tiles
+  const MAX_NATIVE_ZOOM = 5;
+  const MAX_ZOOM = 5;
+  const MIN_ZOOM = 0;
+
+  const COLORS = {
+    WARDENS: "#2ecc71",
+    RANGERS: "#ff9f1a",
+    RAIDERS: "#ff3b30",
+    POI: "#67b7ff",
+    ROUTE: "#ffffff"
+  };
+
+  // ===== MAP INIT =====
+  const map = L.map('map', {
     crs: L.CRS.Simple,
     minZoom: MIN_ZOOM,
     maxZoom: MAX_ZOOM,
+    zoomSnap: 0.25,
     zoomControl: true,
-    attributionControl: false,
-    preferCanvas: true
+    preferCanvas: true,
+    attributionControl: false
   });
 
-  // bounds (pixel space) -> latlng space
-  const southWest = map.unproject([0, IMAGE_SIZE], MAX_NATIVE_ZOOM);
-  const northEast = map.unproject([IMAGE_SIZE, 0], MAX_NATIVE_ZOOM);
+  // ✅ Correct bounds using unproject
+  const southWest = map.unproject([0, MAP_SIZE], MAX_NATIVE_ZOOM);
+  const northEast = map.unproject([MAP_SIZE, 0], MAX_NATIVE_ZOOM);
   const bounds = L.latLngBounds(southWest, northEast);
 
-  // Base tiles
-  const base = L.tileLayer(TILE_URL, {
+  // ✅ Base tiles as BASE LAYER
+  const baseTiles = L.tileLayer("./tiles/{z}/{x}/{y}.jpg", {
     tileSize: TILE_SIZE,
+    minZoom: MIN_ZOOM,
+    maxZoom: MAX_ZOOM,
+    maxNativeZoom: MAX_NATIVE_ZOOM,
     noWrap: true,
     bounds: bounds,
-    tms: true,                 // ✅ fixes negative Y if your tiles are TMS
-    maxNativeZoom: MAX_NATIVE_ZOOM,
-    maxZoom: MAX_ZOOM,
-    minZoom: MIN_ZOOM,
-    keepBuffer: 4,
+    tms: false,
+    keepBuffer: 6,
     updateWhenIdle: true,
     updateWhenZooming: false
-  });
+  }).addTo(map);
 
-  base.addTo(map);
-
-  map.setMaxBounds(bounds.pad(0.05));
+  map.setMaxBounds(bounds.pad(0.06));
   map.fitBounds(bounds);
 
-  // ==== LAYERS ====
+  // Keep inside bounds (prevents gray background)
+  map.on("drag", () => map.panInsideBounds(bounds, { animate: false }));
+  map.on("zoomend", () => map.panInsideBounds(bounds, { animate: false }));
+
+  // ===== HELPERS =====
+  function pxToLatLng(x, z){ return map.unproject([x, z], MAX_NATIVE_ZOOM); }
+
+  function pxRadiusToMapRadius(centerX, centerZ, radiusPx){
+    const c = pxToLatLng(centerX, centerZ);
+    const edge = pxToLatLng(centerX + radiusPx, centerZ);
+    return c.distanceTo(edge);
+  }
+
+  function dangerLabel(tier) {
+    if (tier === "LOW") return "LOW danger";
+    if (tier === "MEDIUM") return "MEDIUM danger";
+    return "EXTREME danger";
+  }
+
+  function labelClass(tier){
+    if (tier==="LOW") return "city-label low";
+    if (tier==="MEDIUM") return "city-label med";
+    return "city-label ext";
+  }
+
+  function popupHTML(z) {
+    return `
+      <div style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; min-width: 240px;">
+        <div style="font-size: 16px; font-weight: 1000; margin-bottom: 6px;">${z.name}</div>
+        <div><b>Faction:</b> ${z.faction}</div>
+        <div><b>Threat:</b> ${dangerLabel(z.tier)}</div>
+        <div><b>AI:</b> ${z.ai}</div>
+        <div><b>Zone:</b> ${z.radius} m</div>
+        <div><b>Coords:</b> X${z.x} Z${z.z}</div>
+      </div>
+    `;
+  }
+
+  // ===== LAYERS =====
   const layerLabels  = L.layerGroup();
   const layerFactions = L.layerGroup();
   const layerRoutes  = L.layerGroup();
   const layerPOI     = L.layerGroup();
+  const layerHeat    = L.layerGroup();
+  const layerGrid    = L.layerGroup();
 
-  // Example marker styles (simple circles)
-  function addPOI(name, xy, layer) {
-    const latlng = map.unproject(xy, MAX_NATIVE_ZOOM);
-    L.circleMarker(latlng, { radius: 6 })
-      .bindTooltip(name, { direction: "top", offset: [0, -6] })
-      .addTo(layer);
+  // ===== GRID =====
+  for (let i = 0; i <= MAP_SIZE; i += 2000) {
+    const a1 = map.unproject([i, 0], MAX_NATIVE_ZOOM);
+    const a2 = map.unproject([i, MAP_SIZE], MAX_NATIVE_ZOOM);
+    const b1 = map.unproject([0, i], MAX_NATIVE_ZOOM);
+    const b2 = map.unproject([MAP_SIZE, i], MAX_NATIVE_ZOOM);
+
+    L.polyline([a1, a2], { weight: 1, opacity: 0.12 }).addTo(layerGrid);
+    L.polyline([b1, b2], { weight: 1, opacity: 0.12 }).addTo(layerGrid);
   }
 
-  // POI examples (xy in pixels!)
-  addPOI("Nadbor Police",  [10245, 8756], layerPOI);
-  addPOI("Nadbor Med",     [10180, 8890], layerPOI);
+  // ===== DATA =====
 
-  // Route example polyline
-  function addRoute(name, pointsXY, layer) {
-    const pts = pointsXY.map(p => map.unproject(p, MAX_NATIVE_ZOOM));
-    L.polyline(pts, { weight: 3 })
-      .bindTooltip(name)
-      .addTo(layer);
+  // Cities / Danger Zones
+  const zones = [
+    // Rangers
+    { name: "Brena",   faction: "Blackwood Rangers", tier: "MEDIUM", color: COLORS.RANGERS, x: 6467,  z: 11354, radius: 500, ai: 5 },
+    { name: "Sitnik",  faction: "Blackwood Rangers", tier: "MEDIUM", color: COLORS.RANGERS, x: 11634, z: 9605,  radius: 200, ai: 5 },
+    { name: "Topolin", faction: "Blackwood Rangers", tier: "MEDIUM", color: COLORS.RANGERS, x: 1524,  z: 7412,  radius: 500, ai: 5 },
+    { name: "Nadbor",  faction: "Blackwood Rangers", tier: "MEDIUM", color: COLORS.RANGERS, x: 5959,  z: 4113,  radius: 500, ai: 5 },
+
+    // Wardens
+    { name: "Glinishka", faction: "Livonian Wardens", tier: "LOW", color: COLORS.WARDENS, x: 4999, z: 9955, radius: 200, ai: 3 },
+    { name: "Zalesie",   faction: "Livonian Wardens", tier: "LOW", color: COLORS.WARDENS, x: 907,  z: 5550, radius: 200, ai: 3 },
+    { name: "Lukow",     faction: "Livonian Wardens", tier: "LOW", color: COLORS.WARDENS, x: 3632, z: 11774, radius: 200, ai: 3 },
+    { name: "Polana",    faction: "Livonian Wardens", tier: "LOW", color: COLORS.WARDENS, x: 3360, z: 2018, radius: 200, ai: 3 },
+
+    // Raiders
+    { name: "Bunker", faction: "Ironfang Raiders", tier: "EXTREME", color: COLORS.RAIDERS, x: 715, z: 1144, radius: 320, ai: 8 }
+  ];
+
+  // Patrol routes (example)
+  const routes = [
+    {
+      name: "Ironfang Bunker Route",
+      faction: "Ironfang Raiders",
+      color: COLORS.RAIDERS,
+      points: [
+        [541, 1097],
+        [888, 1190],
+        [715, 1144]
+      ],
+      style: { weight: 3, opacity: 0.85, dashArray: "8 10" }
+    },
+    {
+      name: "Nadbor Street Patrol (example)",
+      faction: "Blackwood Rangers",
+      color: COLORS.RANGERS,
+      points: [
+        [5700, 3950],
+        [6200, 4020],
+        [6350, 4300],
+        [6000, 4450],
+        [5700, 4200]
+      ],
+      style: { weight: 3, opacity: 0.8 }
+    }
+  ];
+
+  // POI (Police/Med/Fire etc)
+  const pois = [
+    { name: "Nadbor Police", type: "Police", x: 6020, z: 4200 },
+    { name: "Nadbor Med", type: "Med", x: 5850, z: 4320 },
+
+    { name: "Topolin Police", type: "Police", x: 1600, z: 7600 },
+    { name: "Topolin Med", type: "Med", x: 1500, z: 7800 },
+
+    { name: "Sitnik Police", type: "Police", x: 11720, z: 9660 },
+    { name: "Sitnik Med", type: "Med", x: 11540, z: 9750 }
+  ];
+
+  // ===== RENDERING =====
+
+  // Faction zones + labels + heat
+  function renderZone(z) {
+    const center = pxToLatLng(z.x, z.z);
+
+    // zone (danger)
+    L.circle(center, {
+      radius: pxRadiusToMapRadius(z.x, z.z, z.radius),
+      color: z.color,
+      weight: 2,
+      opacity: 0.9,
+      fillColor: z.color,
+      fillOpacity: 0.18
+    }).addTo(layerFactions);
+
+    // marker
+    L.circleMarker(center, {
+      radius: 7,
+      color: z.color,
+      fillColor: z.color,
+      fillOpacity: 1,
+      weight: 2
+    }).bindPopup(popupHTML(z)).addTo(layerFactions);
+
+    // label
+    L.marker(center, { interactive: false, opacity: 0.95 })
+      .bindTooltip(z.name, { permanent: true, direction: "center", className: labelClass(z.tier) })
+      .addTo(layerLabels);
+
+    // heat
+    const intensity = (z.tier === "LOW") ? 0.9 : (z.tier === "MEDIUM" ? 1.25 : 1.7);
+    const steps = 7;
+    for (let i=1; i<=steps; i++) {
+      const k = i/steps;
+      const radiusPx = z.radius * (0.3 + 1.1*k);
+      const opacity = (0.16 * intensity) * (1.0 - k*0.85);
+      L.circle(center, {
+        radius: pxRadiusToMapRadius(z.x, z.z, radiusPx),
+        color: z.color,
+        weight: 0,
+        opacity: 0,
+        fillColor: z.color,
+        fillOpacity: Math.max(0, opacity)
+      }).addTo(layerHeat);
+    }
   }
 
-  addRoute("Nadbor Street Loop 01", [
-    [10080, 8730],
-    [10320, 8740],
-    [10460, 8900],
-    [10270, 9050],
-    [10060, 8920]
-  ], layerRoutes);
+  zones.forEach(renderZone);
 
-  // Faction zones example (circles)
-  function addZone(name, centerXY, radiusPx, layer) {
-    const center = map.unproject(centerXY, MAX_NATIVE_ZOOM);
-    // radius in CRS.Simple is in map units; convert pixels->map units:
-    // easiest: approximate by unproject shift
-    const edge = map.unproject([centerXY[0] + radiusPx, centerXY[1]], MAX_NATIVE_ZOOM);
-    const r = center.distanceTo(edge);
-
-    L.circle(center, { radius: r, weight: 2, fillOpacity: 0.15 })
-      .bindTooltip(name)
-      .addTo(layer);
+  // Routes
+  function renderRoute(r) {
+    const latlngs = r.points.map(p => pxToLatLng(p[0], p[1]));
+    const style = Object.assign({ color: r.color }, r.style || {});
+    L.polyline(latlngs, style).addTo(layerRoutes).bindTooltip(r.name);
+    // endpoints
+    r.points.forEach((p, idx) => {
+      L.circleMarker(pxToLatLng(p[0], p[1]), {
+        radius: idx === 0 ? 7 : 5,
+        weight: 2,
+        color: r.color,
+        fillColor: r.color,
+        fillOpacity: 1
+      }).addTo(layerRoutes).bindPopup(`<b>${r.name}</b><br/>Point ${idx+1}<br/>X${p[0]} Z${p[1]}`);
+    });
   }
 
-  addZone("Wardens Guards (PD)", [10245, 8756], 90, layerFactions);
-  addZone("Rangers Patrol", [10220, 8800], 650, layerFactions);
+  routes.forEach(renderRoute);
 
-  // Enable some layers by default
-  layerPOI.addTo(map);
+  // POI
+  function poiIcon(type){
+    // simple color by type
+    const c = (type === "Police") ? "#67b7ff" : (type === "Med" ? "#ff5bd6" : "#ffffff");
+    return { color: c, fillColor: c };
+  }
+
+  function renderPOI(p) {
+    const ll = pxToLatLng(p.x, p.z);
+    const ic = poiIcon(p.type);
+
+    L.circleMarker(ll, {
+      radius: 6,
+      weight: 2,
+      color: ic.color,
+      fillColor: ic.fillColor,
+      fillOpacity: 1
+    }).addTo(layerPOI)
+      .bindPopup(`<b>${p.name}</b><br/>Type: ${p.type}<br/>X${p.x} Z${p.z}`);
+
+    L.marker(ll, { interactive: false, opacity: 0.95 })
+      .bindTooltip(p.name, { permanent: false, direction: "top", className: "poi-label", offset: [0,-10] })
+      .addTo(layerPOI);
+  }
+
+  pois.forEach(renderPOI);
+
+  // ===== DEFAULT ON =====
+  layerFactions.addTo(map);
+  layerLabels.addTo(map);
   layerRoutes.addTo(map);
+  layerPOI.addTo(map);
+  layerGrid.addTo(map);
+  // heat OFF by default (можна включити у меню)
 
-  // Layer control
-  const overlays = {
-    "POI": layerPOI,
-    "Routes": layerRoutes,
-    "Factions/Zones": layerFactions,
-    "Labels": layerLabels
+  // ===== LAYER CONTROL =====
+  const baseLayers = {
+    "🗺️ Livonia Map (tiles)": baseTiles
   };
 
-  L.control.layers(null, overlays, { collapsed: false }).addTo(map);
+  const overlays = {
+    "🏷️ Labels (cities)": layerLabels,
+    "⚔️ Factions / Zones": layerFactions,
+    "🧭 Routes (patrols)": layerRoutes,
+    "🏥 POI (Police/Med)": layerPOI,
+    "🔥 Heatmap": layerHeat,
+    "📐 Grid": layerGrid
+  };
 
-  // Debug: prevent requests outside bounds (extra safety)
-  map.on("moveend zoomend", () => {
-    const c = map.getCenter();
-    if (!bounds.contains(c)) map.panInsideBounds(bounds, { animate: false });
-  });
+  L.control.layers(baseLayers, overlays, { collapsed: false }).addTo(map);
+
+  // ===== LEGEND =====
+  const legend = L.control({position: 'bottomleft'});
+  legend.onAdd = function() {
+    const div = L.DomUtil.create('div', 'legend');
+    div.innerHTML = `
+      <h3>FRoneX – Livonia Danger Map</h3>
+      <div class="row"><span class="dot" style="background:${COLORS.WARDENS}"></span><div><b>Livonian Wardens</b><br/>LOW threat</div></div>
+      <div class="row"><span class="dot" style="background:${COLORS.RANGERS}"></span><div><b>Blackwood Rangers</b><br/>MEDIUM threat</div></div>
+      <div class="row"><span class="dot" style="background:${COLORS.RAIDERS}"></span><div><b>Ironfang Raiders</b><br/>EXTREME threat</div></div>
+      <div class="muted">✅ Full 18K map fixed: bounds via unproject + maxBounds. No gray borders.</div>
+    `;
+    return div;
+  };
+  legend.addTo(map);
 </script>
 </body>
 </html>
