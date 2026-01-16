@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FRoneX Livonia Danger Map</title>
+
+  <meta name="description" content="Interactive Livonia danger map (Wardens / Blackwood Rangers / Ironfang Raiders) with city toggles." />
+  <meta property="og:title" content="FRoneX Livonia Danger Map" />
+  <meta property="og:description" content="Interactive map: danger zones, bunker patrols, city labels. Toggle layers." />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { height: 100%; }
+    .legend {
+      background: rgba(0,0,0,0.75);
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.35;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      max-width: 360px;
+    }
+    .legend h3 { margin: 0 0 10px; font-size: 15px; }
+    .row { display: flex; align-items: center; gap: 10px; margin: 7px 0; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+    .muted { opacity: 0.85; font-size: 12px; margin-top: 10px; }
+    .leaflet-control-layers { border-radius: 14px !important; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+    .leaflet-control-layers-expanded { background: rgba(255,255,255,0.92); backdrop-filter: blur(10px); }
+
+    /* City labels */
+    .city-label {
+      font-weight: 800;
+      font-size: 14px;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.85);
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+    .city-label.low { color: #b9ffcc; }
+    .city-label.med { color: #ffd28a; }
+    .city-label.ext { color: #ffb0b0; }
+  </style>
+</head>
+
+<body>
+<div id="map"></div>
+
+<script>
+  /**
+   * GitHub Pages TILE version.
+   *
+   * Folder:
+   *   /tiles/{z}/{x}/{y}.jpg
+   *
+   * NOTE:
+   * - Your generator outputs standard XYZ tiles (y grows downward),
+   *   so we MUST NOT enable TMS flipping.
+   */
+  const MAP_SIZE = 15360;
+  const MAX_ZOOM = 6;
+  const TILE_SIZE = 256;
+
+  const COLORS = {
+    WARDENS: "#2ecc71",
+    RANGERS: "#ff9f1a",
+    RAIDERS: "#ff3b30"
+  };
+
+  const map = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: 0,
+    maxZoom: MAX_ZOOM,
+    zoomSnap: 0.25
+  });
+
+  const bounds = [[0,0], [MAP_SIZE, MAP_SIZE]];
+  map.fitBounds(bounds);
+
+  // Base tile layer (XYZ)  ✅ FIXED: no TMS flip
+  const livoniaTiles = L.tileLayer("./tiles/{z}/{x}/{y}.jpg", {
+    minZoom: 0,
+    maxZoom: MAX_ZOOM,
+    tileSize: TILE_SIZE,
+    noWrap: true,
+    bounds: bounds
+  }).addTo(map);
+
+  // Optional grid
+  const gridLayer = L.layerGroup();
+  for (let i = 0; i <= MAP_SIZE; i += 2000) {
+    L.polyline([[i,0],[i,MAP_SIZE]], {weight: 1, opacity: 0.12}).addTo(gridLayer);
+    L.polyline([[0,i],[MAP_SIZE,i]], {weight: 1, opacity: 0.12}).addTo(gridLayer);
+  }
+  gridLayer.addTo(map);
+
+  // Zones/cities
+  const zones = [
+    // Rangers
+    { name: "Brena",   faction: "Blackwood Rangers", tier: "MEDIUM", color: COLORS.RANGERS, x: 6467,  z: 11354, radius: 500, ai: 5 },
+    { name: "Sitnik",  faction: "Blackwood Rangers", tier: "MEDIUM", color: COLORS.RANGERS, x: 11634, z: 9605,  radius: 200, ai: 5 },
+    { name: "Topolin", faction: "Blackwood Rangers", tier: "MEDIUM", color: COLORS.RANGERS, x: 1524,  z: 7412,  radius: 500, ai: 5 },
+    { name: "Nadbor",  faction: "Blackwood Rangers", tier: "MEDIUM", color: COLORS.RANGERS, x: 5959,  z: 4113,  radius: 500, ai: 5 },
+
+    // Wardens
+    { name: "Glinishka", faction: "Livonian Wardens", tier: "LOW", color: COLORS.WARDENS, x: 4999, z: 9955, radius: 200, ai: 3 },
+    { name: "Zalesie",   faction: "Livonian Wardens", tier: "LOW", color: COLORS.WARDENS, x: 907,  z: 5550, radius: 200, ai: 3 },
+    { name: "Lukow",     faction: "Livonian Wardens", tier: "LOW", color: COLORS.WARDENS, x: 3632, z: 11774, radius: 200, ai: 3 },
+    { name: "Polana",    faction: "Livonian Wardens", tier: "LOW", color: COLORS.WARDENS, x: 3360, z: 2018, radius: 200, ai: 3 },
+
+    // Ironfang
+    { name: "Bunker", faction: "Ironfang Raiders", tier: "EXTREME", color: COLORS.RAIDERS, x: 715, z: 1144, radius: 320, ai: 8 }
+  ];
+
+  const bunkerPatrols = [
+    { name: "Ironfang Patrol A (4 AI)", x: 541, z: 1097 },
+    { name: "Ironfang Patrol B (4 AI)", x: 888, z: 1190 }
+  ];
+
+  function dangerLabel(tier) {
+    if (tier === "LOW") return "LOW danger";
+    if (tier === "MEDIUM") return "MEDIUM danger";
+    return "EXTREME danger";
+  }
+
+  function popupHTML(z) {
+    return `
+      <div style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; min-width: 240px;">
+        <div style="font-size: 16px; font-weight: 900; margin-bottom: 6px;">${z.name}</div>
+        <div><b>Faction:</b> ${z.faction}</div>
+        <div><b>Threat:</b> ${dangerLabel(z.tier)}</div>
+        <div><b>AI:</b> ${z.ai}</div>
+        <div><b>Zone:</b> ${z.radius} m</div>
+        <div><b>Coords:</b> X${z.x} Z${z.z}</div>
+      </div>
+    `;
+  }
+
+  // Layers
+  const wardensLayer = L.layerGroup();
+  const rangersLayer = L.layerGroup();
+  const raidersLayer = L.layerGroup();
+  const heatLayer = L.layerGroup();
+  const cityLabelsLayer = L.layerGroup();
+
+  function labelClass(tier){
+    if (tier==="LOW") return "city-label low";
+    if (tier==="MEDIUM") return "city-label med";
+    return "city-label ext";
+  }
+
+  function renderZone(z, layerGroup) {
+    const center = [z.z, z.x];
+
+    L.circle(center, {
+      radius: z.radius,
+      color: z.color,
+      weight: 2,
+      opacity: 0.9,
+      fillColor: z.color,
+      fillOpacity: 0.18
+    }).addTo(layerGroup);
+
+    const marker = L.circleMarker(center, {
+      radius: 7,
+      color: z.color,
+      fillColor: z.color,
+      fillOpacity: 1,
+      weight: 2
+    }).addTo(layerGroup);
+
+    marker.bindPopup(popupHTML(z));
+
+    L.marker(center, { interactive: false, opacity: 0.95 })
+      .bindTooltip(z.name, { permanent: true, direction: "center", className: labelClass(z.tier) })
+      .addTo(cityLabelsLayer);
+  }
+
+  zones.forEach(z => {
+    if (z.faction === "Livonian Wardens") renderZone(z, wardensLayer);
+    if (z.faction === "Blackwood Rangers") renderZone(z, rangersLayer);
+    if (z.faction === "Ironfang Raiders") renderZone(z, raidersLayer);
+  });
+
+  bunkerPatrols.forEach(p => {
+    const center = [p.z, p.x];
+    L.circleMarker(center, {
+      radius: 8,
+      color: COLORS.RAIDERS,
+      fillColor: COLORS.RAIDERS,
+      fillOpacity: 1,
+      weight: 2
+    }).addTo(raidersLayer).bindPopup(`<b>${p.name}</b><br/>X${p.x} Z${p.z}`);
+  });
+
+  L.polyline(bunkerPatrols.map(p => [p.z, p.x]), { color: COLORS.RAIDERS, weight: 3, opacity: 0.85, dashArray: "8 10" }).addTo(raidersLayer);
+
+  wardensLayer.addTo(map);
+  rangersLayer.addTo(map);
+  raidersLayer.addTo(map);
+  cityLabelsLayer.addTo(map);
+
+  function heatCircle(z, intensity=1.0) {
+    const center = [z.z, z.x];
+    const steps = 7;
+    for (let i=1; i<=steps; i++) {
+      const k = i/steps;
+      const radius = z.radius * (0.3 + 1.1*k);
+      const opacity = (0.16 * intensity) * (1.0 - k*0.85);
+      L.circle(center, { radius, color: z.color, weight: 0, opacity: 0, fillColor: z.color, fillOpacity: Math.max(0, opacity) }).addTo(heatLayer);
+    }
+  }
+  zones.forEach(z => {
+    const intensity = (z.tier === "LOW") ? 0.9 : (z.tier === "MEDIUM" ? 1.25 : 1.7);
+    heatCircle(z, intensity);
+  });
+
+  const overlays = {
+    "🗺️ Livonia Map (tiles)": livoniaTiles,
+    "🏷️ City Names (labels)": cityLabelsLayer,
+    "🟢 Livonian Wardens (LOW)": wardensLayer,
+    "🟠 Blackwood Rangers (MEDIUM)": rangersLayer,
+    "🔴 Ironfang Raiders (EXTREME / Bunker)": raidersLayer,
+    "🔥 Danger Heatmap": heatLayer,
+    "🧭 Grid": gridLayer
+  };
+
+  L.control.layers({}, overlays, { collapsed: false }).addTo(map);
+
+  const legend = L.control({position: 'bottomleft'});
+  legend.onAdd = function() {
+    const div = L.DomUtil.create('div', 'legend');
+    div.innerHTML = `
+      <h3>FRoneX – Livonia Danger Map</h3>
+      <div class="row"><span class="dot" style="background:${COLORS.WARDENS}"></span><div><b>Livonian Wardens</b><br/>LOW threat</div></div>
+      <div class="row"><span class="dot" style="background:${COLORS.RANGERS}"></span><div><b>Blackwood Rangers</b><br/>MEDIUM threat</div></div>
+      <div class="row"><span class="dot" style="background:${COLORS.RAIDERS}"></span><div><b>Ironfang Raiders</b><br/>EXTREME threat</div></div>
+      <div class="muted">✅ FIXED: XYZ tiles (no TMS flip). Toggle layers in the menu.</div>
+    `;
+    return div;
+  };
+  legend.addTo(map);
+</script>
+</body>
+</html>
