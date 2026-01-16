@@ -85,12 +85,14 @@
   const TILE_SIZE = 256;
 
   // maxNativeZoom = реальний максимум у tiles
-  // IMPORTANT: MAP_SIZE must match the tile pyramid extent at MAX_NATIVE_ZOOM.
   // User confirmed max tile zoom is 5.
+  // IMPORTANT: tiles were generated from an 18k source image (non power-of-two),
+  // so MAP_SIZE must match the real source image size.
   const MAX_NATIVE_ZOOM = 5;
-  const MAP_SIZE = TILE_SIZE * Math.pow(2, MAX_NATIVE_ZOOM);
+  const MAP_SIZE = 18000;
   const MAX_ZOOM = MAX_NATIVE_ZOOM;
-  const MIN_ZOOM = 0;
+  // Allow zooming out a bit more so full 18k map can be seen on any screen.
+  const MIN_ZOOM = -2;
 
   // Better palette (readable on satellite tiles)
   const COLORS = {
@@ -133,6 +135,12 @@
     updateWhenZooming: false
   }).addTo(map);
 
+  // Ensure bounds are applied after tiles init (prevents "cropped" view in some browsers)
+  baseTiles.once('load', () => {
+    map.fitBounds(bounds, { animate: false });
+    map.panInsideBounds(bounds, { animate: false });
+  });
+
   map.setMaxBounds(bounds.pad(0.06));
   map.fitBounds(bounds);
 
@@ -158,6 +166,8 @@
   }
 
   function metersToRadius(centerX, centerZ, meters){
+    // Safety clamp: prevents accidental full-map fills if config has huge radius values
+    meters = Math.max(1, Math.min(meters, 5000));
     const c = dzToLatLng(centerX, centerZ);
     const e = dzToLatLng(centerX + meters, centerZ);
     return c.distanceTo(e);
@@ -298,12 +308,12 @@
       .bindTooltip(z.name, { permanent: true, direction: "center", className: labelClass(z.tier) })
       .addTo(layerLabels);
 
-    // heat
+    // heat (do NOT multiply by x3, only the main zone circle is enlarged)
     const intensity = (z.tier === "LOW") ? 0.9 : (z.tier === "MEDIUM" ? 1.25 : 1.7);
     const steps = 7;
     for (let i=1; i<=steps; i++) {
       const k = i/steps;
-      const radiusMeters = (z.radius * 3) * (0.3 + 1.1*k);
+      const radiusMeters = (z.radius) * (0.4 + 1.3*k);
       const opacity = (0.16 * intensity) * (1.0 - k*0.85);
       L.circle(center, {
         radius: metersToRadius(z.x, z.z, radiusMeters),
