@@ -1,0 +1,819 @@
+{
+  "m_Version": 30,
+  "Enabled": 1,
+  "FormationScale": -1.0,
+  "DespawnTime": 0.0,
+  "RespawnTime": 120.0,
+  "MinDistRadius": 50.0,
+  "MaxDistRadius": 1500.0,
+  "DespawnRadius": 1600.0,
+  "AccuracyMin": -1.0,
+  "AccuracyMax": -1.0,
+  "ThreatDistanceLimit": -1.0,
+  "NoiseInvestigationDistanceLimit": -1.0,
+  "MaxFlankingDistance": -1.0,
+  "EnableFlankingOutsideCombat": -1,
+  "DamageMultiplier": -1.0,
+  "DamageReceivedMultiplier": -1.0,
+  "LoadBalancingCategories": {
+    "Global": [
+      {
+        "MinPlayers": 0,
+        "MaxPlayers": 10,
+        "MaxPatrols": 10
+      },
+      {
+        "MinPlayers": 11,
+        "MaxPlayers": 20,
+        "MaxPatrols": 8
+      },
+      {
+        "MinPlayers": 21,
+        "MaxPlayers": 30,
+        "MaxPatrols": 6
+      },
+      {
+        "MinPlayers": 31,
+        "MaxPlayers": 40,
+        "MaxPatrols": 4
+      },
+      {
+        "MinPlayers": 41,
+        "MaxPlayers": 50,
+        "MaxPatrols": 2
+      },
+      {
+        "MinPlayers": 51,
+        "MaxPlayers": 255,
+        "MaxPatrols": 0
+      }
+    ],
+    "Example": [
+      {
+        "MinPlayers": 0,
+        "MaxPlayers": 255,
+        "MaxPatrols": 0
+      }
+    ],
+    "Quest": [
+      {
+        "MinPlayers": 0,
+        "MaxPlayers": 255,
+        "MaxPatrols": 0
+      }
+    ],
+    "ObjectPatrol": [
+      {
+        "MinPlayers": 0,
+        "MaxPlayers": 255,
+        "MaxPatrols": 0
+      }
+    ],
+    "HelicopterWreck": [
+      {
+        "MinPlayers": 0,
+        "MaxPlayers": 255,
+        "MaxPatrols": 0
+      }
+    ],
+    "ContaminatedArea": [
+      {
+        "MinPlayers": 0,
+        "MaxPlayers": 255,
+        "MaxPatrols": 0
+      }
+    ],
+    "Patrol": [
+      {
+        "MinPlayers": 0,
+        "MaxPlayers": 255,
+        "MaxPatrols": 30
+      }
+    ]
+  },
+  "Patrols": [
+    {
+      "Name": "Brena_CityPatrol",
+      "Persist": 1,
+      "Faction": "West",
+      "Formation": "",
+      "FormationScale": 0.0,
+      "FormationLooseness": 0.0,
+      "Loadout": "FRoneX_Medium",
+      "Units": [],
+      "NumberOfAI": 5,
+      "NumberOfAIMax": 5,
+      "Behaviour": "HALT_OR_ALTERNATE",
+      "LootingBehaviour": "",
+      "Speed": "WALK",
+      "UnderThreatSpeed": "SPRINT",
+      "DefaultStance": "STANDING",
+      "DefaultLookAngle": 0.0,
+      "CanBeLooted": 1,
+      "LootDropOnDeath": "",
+      "UnlimitedReload": 0,
+      "SniperProneDistanceThreshold": 0.0,
+      "AccuracyMin": 0.27,
+      "AccuracyMax": 0.35,
+      "ThreatDistanceLimit": 450.0,
+      "NoiseInvestigationDistanceLimit": -1.0,
+      "MaxFlankingDistance": -1.0,
+      "EnableFlankingOutsideCombat": -1,
+      "DamageMultiplier": -1.0,
+      "DamageReceivedMultiplier": -1.0,
+      "HeadshotResistance": 0.0,
+      "CanBeTriggeredByAI": 0,
+      "MinDistRadius": -1.0,
+      "MaxDistRadius": -1.0,
+      "DespawnRadius": -1.0,
+      "MinSpreadRadius": 5.0,
+      "MaxSpreadRadius": 20.0,
+      "Chance": 1.0,
+      "DespawnTime": 0.0,
+      "RespawnTime": 120.0,
+      "LoadBalancingCategory": "Patrol",
+      "ObjectClassName": "",
+      "WaypointInterpolation": "",
+      "UseRandomWaypointAsStartPoint": 0,
+      "Waypoints": [
+        [
+          6467.0,
+          0.0,
+          11354.0
+        ],
+        [
+          6517.0,
+          0.0,
+          11354.0
+        ],
+        [
+          6467.0,
+          0.0,
+          11404.0
+        ],
+        [
+          6417.0,
+          0.0,
+          11354.0
+        ],
+        [
+          6467.0,
+          0.0,
+          11304.0
+        ]
+      ],
+      "ThreatDistanceRatio": 0.55
+    },
+    {
+      "Name": "Kolembrody_CityPatrol",
+      "Persist": 1,
+      "Faction": "West",
+      "Formation": "",
+      "FormationScale": 0.0,
+      "FormationLooseness": 0.0,
+      "Loadout": "FRoneX_Light",
+      "Units": [],
+      "NumberOfAI": 3,
+      "NumberOfAIMax": 3,
+      "Behaviour": "HALT_OR_ALTERNATE",
+      "LootingBehaviour": "",
+      "Speed": "WALK",
+      "UnderThreatSpeed": "SPRINT",
+      "DefaultStance": "STANDING",
+      "DefaultLookAngle": 0.0,
+      "CanBeLooted": 1,
+      "LootDropOnDeath": "",
+      "UnlimitedReload": 0,
+      "SniperProneDistanceThreshold": 0.0,
+      "AccuracyMin": 0.14,
+      "AccuracyMax": 0.22,
+      "ThreatDistanceLimit": 320.0,
+      "NoiseInvestigationDistanceLimit": -1.0,
+      "MaxFlankingDistance": -1.0,
+      "EnableFlankingOutsideCombat": -1,
+      "DamageMultiplier": -1.0,
+      "DamageReceivedMultiplier": -1.0,
+      "HeadshotResistance": 0.0,
+      "CanBeTriggeredByAI": 0,
+      "MinDistRadius": -1.0,
+      "MaxDistRadius": -1.0,
+      "DespawnRadius": -1.0,
+      "MinSpreadRadius": 5.0,
+      "MaxSpreadRadius": 20.0,
+      "Chance": 1.0,
+      "DespawnTime": 0.0,
+      "RespawnTime": 120.0,
+      "LoadBalancingCategory": "Patrol",
+      "ObjectClassName": "",
+      "WaypointInterpolation": "",
+      "UseRandomWaypointAsStartPoint": 0,
+      "Waypoints": [
+        [
+          8419.0,
+          0.0,
+          12016.0
+        ],
+        [
+          8469.0,
+          0.0,
+          12016.0
+        ],
+        [
+          8419.0,
+          0.0,
+          12066.0
+        ],
+        [
+          8369.0,
+          0.0,
+          12016.0
+        ],
+        [
+          8419.0,
+          0.0,
+          11966.0
+        ]
+      ],
+      "ThreatDistanceRatio": 0.35
+    },
+    {
+      "Name": "Lembork_CityPatrol",
+      "Persist": 1,
+      "Faction": "West",
+      "Formation": "",
+      "FormationScale": 0.0,
+      "FormationLooseness": 0.0,
+      "Loadout": "FRoneX_Light",
+      "Units": [],
+      "NumberOfAI": 3,
+      "NumberOfAIMax": 3,
+      "Behaviour": "HALT_OR_ALTERNATE",
+      "LootingBehaviour": "",
+      "Speed": "WALK",
+      "UnderThreatSpeed": "SPRINT",
+      "DefaultStance": "STANDING",
+      "DefaultLookAngle": 0.0,
+      "CanBeLooted": 1,
+      "LootDropOnDeath": "",
+      "UnlimitedReload": 0,
+      "SniperProneDistanceThreshold": 0.0,
+      "AccuracyMin": 0.14,
+      "AccuracyMax": 0.22,
+      "ThreatDistanceLimit": 320.0,
+      "NoiseInvestigationDistanceLimit": -1.0,
+      "MaxFlankingDistance": -1.0,
+      "EnableFlankingOutsideCombat": -1,
+      "DamageMultiplier": -1.0,
+      "DamageReceivedMultiplier": -1.0,
+      "HeadshotResistance": 0.0,
+      "CanBeTriggeredByAI": 0,
+      "MinDistRadius": -1.0,
+      "MaxDistRadius": -1.0,
+      "DespawnRadius": -1.0,
+      "MinSpreadRadius": 5.0,
+      "MaxSpreadRadius": 20.0,
+      "Chance": 1.0,
+      "DespawnTime": 0.0,
+      "RespawnTime": 120.0,
+      "LoadBalancingCategory": "Patrol",
+      "ObjectClassName": "",
+      "WaypointInterpolation": "",
+      "UseRandomWaypointAsStartPoint": 0,
+      "Waypoints": [
+        [
+          8719.0,
+          0.0,
+          6650.0
+        ],
+        [
+          8769.0,
+          0.0,
+          6650.0
+        ],
+        [
+          8719.0,
+          0.0,
+          6700.0
+        ],
+        [
+          8669.0,
+          0.0,
+          6650.0
+        ],
+        [
+          8719.0,
+          0.0,
+          6600.0
+        ]
+      ],
+      "ThreatDistanceRatio": 0.35
+    },
+    {
+      "Name": "Sitnik_Rangers_StreetPatrol",
+      "Persist": 1,
+      "Loadout": "BlackwoodRangersLoadout",
+      "NumberOfAI": 5,
+      "NumberOfAIMax": 5,
+      "Behaviour": "PATROL",
+      "WaypointBehaviour": "LOOP",
+      "Formation": "COLUMN",
+      "Speed": "JOG",
+      "UnderThreatSpeed": "SPRINT",
+      "WaypointCompletionRadius": 18.0,
+      "ThreatDistanceRatio": 0.75,
+      "Chance": 1.0,
+      "RespawnTime": 180.0,
+      "Waypoints": [
+        [
+          11228.0,
+          0.0,
+          9523.0
+        ],
+        [
+          11318.0,
+          0.0,
+          9569.0
+        ],
+        [
+          11419.0,
+          0.0,
+          9620.0
+        ],
+        [
+          11547.0,
+          0.0,
+          9640.0
+        ],
+        [
+          11599.0,
+          0.0,
+          9648.0
+        ],
+        [
+          11634.0,
+          0.0,
+          9604.0
+        ],
+        [
+          11599.0,
+          0.0,
+          9648.0
+        ],
+        [
+          11547.0,
+          0.0,
+          9640.0
+        ],
+        [
+          11419.0,
+          0.0,
+          9620.0
+        ],
+        [
+          11318.0,
+          0.0,
+          9569.0
+        ],
+        [
+          11228.0,
+          0.0,
+          9523.0
+        ]
+      ]
+    },
+    {
+      "Name": "Topolin_Rangers_StreetPatrol",
+      "Persist": 1,
+      "Loadout": "BlackwoodRangersLoadout",
+      "NumberOfAI": 3,
+      "NumberOfAIMax": 3,
+      "Behaviour": "PATROL",
+      "WaypointBehaviour": "LOOP",
+      "Formation": "COLUMN",
+      "Speed": "JOG",
+      "UnderThreatSpeed": "SPRINT",
+      "WaypointCompletionRadius": 18.0,
+      "ThreatDistanceRatio": 0.75,
+      "Chance": 1.0,
+      "RespawnTime": 180.0,
+      "Waypoints": [
+        [
+          1866.0,
+          0.0,
+          7367.0
+        ],
+        [
+          1708.0,
+          0.0,
+          7331.0
+        ],
+        [
+          1594.0,
+          0.0,
+          7304.0
+        ],
+        [
+          1525.0,
+          0.0,
+          7414.0
+        ],
+        [
+          1582.0,
+          0.0,
+          7450.0
+        ],
+        [
+          1780.0,
+          0.0,
+          7507.0
+        ],
+        [
+          1810.0,
+          0.0,
+          7492.0
+        ],
+        [
+          1848.0,
+          0.0,
+          7444.0
+        ],
+        [
+          1906.0,
+          0.0,
+          7450.0
+        ],
+        [
+          1942.0,
+          0.0,
+          7462.0
+        ],
+        [
+          2004.0,
+          0.0,
+          7445.0
+        ],
+        [
+          2017.0,
+          0.0,
+          7406.0
+        ],
+        [
+          1866.0,
+          0.0,
+          7367.0
+        ]
+      ]
+    },
+    {
+      "Name": "Topolin_Rangers_Guard_Police",
+      "Persist": 1,
+      "Loadout": "BlackwoodRangersLoadout",
+      "NumberOfAI": 1,
+      "NumberOfAIMax": 1,
+      "Behaviour": "HALT",
+      "Formation": "COLUMN",
+      "Speed": "WALK",
+      "UnderThreatSpeed": "SPRINT",
+      "WaypointCompletionRadius": 10.0,
+      "ThreatDistanceRatio": 0.9,
+      "Chance": 1.0,
+      "RespawnTime": 180.0,
+      "Waypoints": [
+        [
+          1516.0,
+          0.0,
+          7407.0
+        ]
+      ]
+    },
+    {
+      "Name": "Topolin_Rangers_Guard_Med",
+      "Persist": 1,
+      "Loadout": "BlackwoodRangersLoadout",
+      "NumberOfAI": 1,
+      "NumberOfAIMax": 1,
+      "Behaviour": "HALT",
+      "Formation": "COLUMN",
+      "Speed": "WALK",
+      "UnderThreatSpeed": "SPRINT",
+      "WaypointCompletionRadius": 10.0,
+      "ThreatDistanceRatio": 0.9,
+      "Chance": 1.0,
+      "RespawnTime": 180.0,
+      "Waypoints": [
+        [
+          1922.0,
+          0.0,
+          7381.0
+        ]
+      ]
+    },
+    {
+      "Name": "Nadbor_Rangers_StreetPatrol",
+      "Persist": 1,
+      "Loadout": "BlackwoodRangersLoadout",
+      "NumberOfAI": 3,
+      "NumberOfAIMax": 3,
+      "Behaviour": "PATROL",
+      "WaypointBehaviour": "LOOP",
+      "Formation": "COLUMN",
+      "Speed": "JOG",
+      "UnderThreatSpeed": "SPRINT",
+      "WaypointCompletionRadius": 18.0,
+      "ThreatDistanceRatio": 0.75,
+      "Chance": 1.0,
+      "RespawnTime": 180.0,
+      "Waypoints": [
+        [
+          5959.0,
+          0.0,
+          4177.0
+        ],
+        [
+          6016.0,
+          0.0,
+          4192.0
+        ],
+        [
+          6054.0,
+          0.0,
+          4217.0
+        ],
+        [
+          6102.0,
+          0.0,
+          4139.0
+        ],
+        [
+          5975.0,
+          0.0,
+          4117.0
+        ],
+        [
+          5959.0,
+          0.0,
+          4177.0
+        ]
+      ]
+    },
+    {
+      "Name": "Nadbor_Rangers_Guard_Police",
+      "Persist": 1,
+      "Loadout": "BlackwoodRangersLoadout",
+      "NumberOfAI": 1,
+      "NumberOfAIMax": 1,
+      "Behaviour": "HALT",
+      "Formation": "COLUMN",
+      "Speed": "WALK",
+      "UnderThreatSpeed": "SPRINT",
+      "WaypointCompletionRadius": 10.0,
+      "ThreatDistanceRatio": 0.9,
+      "Chance": 1.0,
+      "RespawnTime": 180.0,
+      "Waypoints": [
+        [
+          5959.0,
+          0.0,
+          4114.0
+        ]
+      ]
+    },
+    {
+      "Name": "Nadbor_Rangers_Guard_Med",
+      "Persist": 1,
+      "Loadout": "BlackwoodRangersLoadout",
+      "NumberOfAI": 1,
+      "NumberOfAIMax": 1,
+      "Behaviour": "HALT",
+      "Formation": "COLUMN",
+      "Speed": "WALK",
+      "UnderThreatSpeed": "SPRINT",
+      "WaypointCompletionRadius": 10.0,
+      "ThreatDistanceRatio": 0.9,
+      "Chance": 1.0,
+      "RespawnTime": 180.0,
+      "Waypoints": [
+        [
+          6066.0,
+          0.0,
+          4198.0
+        ]
+      ]
+    },
+    {
+      "Name": "Glinishka_Wardens_StreetPatrol",
+      "Persist": 1,
+      "Loadout": "LivonianWardensLoadout",
+      "NumberOfAI": 3,
+      "NumberOfAIMax": 3,
+      "Behaviour": "PATROL",
+      "WaypointBehaviour": "LOOP",
+      "Formation": "COLUMN",
+      "Speed": "JOG",
+      "UnderThreatSpeed": "SPRINT",
+      "WaypointCompletionRadius": 16.0,
+      "ThreatDistanceRatio": 0.7,
+      "Chance": 1.0,
+      "RespawnTime": 180.0,
+      "Waypoints": [
+        [
+          4999.0,
+          0.0,
+          9955.0
+        ],
+        [
+          5025.0,
+          0.0,
+          9928.0
+        ],
+        [
+          5052.0,
+          0.0,
+          9802.0
+        ],
+        [
+          5083.0,
+          0.0,
+          9753.0
+        ],
+        [
+          5052.0,
+          0.0,
+          9802.0
+        ],
+        [
+          5025.0,
+          0.0,
+          9928.0
+        ],
+        [
+          4999.0,
+          0.0,
+          9955.0
+        ]
+      ]
+    },
+    {
+      "Name": "Zalesie_Wardens_StreetPatrol",
+      "Persist": 1,
+      "Loadout": "LivonianWardensLoadout",
+      "NumberOfAI": 3,
+      "NumberOfAIMax": 3,
+      "Behaviour": "PATROL",
+      "WaypointBehaviour": "LOOP",
+      "Formation": "COLUMN",
+      "Speed": "JOG",
+      "UnderThreatSpeed": "SPRINT",
+      "WaypointCompletionRadius": 16.0,
+      "ThreatDistanceRatio": 0.7,
+      "Chance": 1.0,
+      "RespawnTime": 180.0,
+      "Waypoints": [
+        [
+          907.0,
+          0.0,
+          5550.0
+        ],
+        [
+          866.0,
+          0.0,
+          5509.0
+        ],
+        [
+          807.0,
+          0.0,
+          5564.0
+        ],
+        [
+          866.0,
+          0.0,
+          5509.0
+        ],
+        [
+          907.0,
+          0.0,
+          5550.0
+        ]
+      ]
+    },
+    {
+      "Name": "Lukow_Wardens_StreetPatrol",
+      "Persist": 1,
+      "Loadout": "LivonianWardensLoadout",
+      "NumberOfAI": 3,
+      "NumberOfAIMax": 3,
+      "Behaviour": "PATROL",
+      "WaypointBehaviour": "LOOP",
+      "Formation": "COLUMN",
+      "Speed": "JOG",
+      "UnderThreatSpeed": "SPRINT",
+      "WaypointCompletionRadius": 16.0,
+      "ThreatDistanceRatio": 0.7,
+      "Chance": 1.0,
+      "RespawnTime": 180.0,
+      "Waypoints": [
+        [
+          3632.0,
+          0.0,
+          11774.0
+        ],
+        [
+          3683.0,
+          0.0,
+          11816.0
+        ],
+        [
+          3779.0,
+          0.0,
+          11750.0
+        ],
+        [
+          3683.0,
+          0.0,
+          11816.0
+        ],
+        [
+          3632.0,
+          0.0,
+          11774.0
+        ]
+      ]
+    },
+    {
+      "Name": "Polana_Wardens_StreetPatrol",
+      "Persist": 1,
+      "Loadout": "LivonianWardensLoadout",
+      "NumberOfAI": 3,
+      "NumberOfAIMax": 3,
+      "Behaviour": "PATROL",
+      "WaypointBehaviour": "LOOP",
+      "Formation": "COLUMN",
+      "Speed": "JOG",
+      "UnderThreatSpeed": "SPRINT",
+      "WaypointCompletionRadius": 16.0,
+      "ThreatDistanceRatio": 0.7,
+      "Chance": 1.0,
+      "RespawnTime": 180.0,
+      "Waypoints": [
+        [
+          3360.0,
+          0.0,
+          2018.0
+        ],
+        [
+          3363.0,
+          0.0,
+          2092.0
+        ],
+        [
+          3360.0,
+          0.0,
+          2018.0
+        ]
+      ]
+    },
+    {
+      "Name": "Tarnow_Wardens_StreetPatrol",
+      "Persist": 1,
+      "Loadout": "LivonianWardensLoadout",
+      "NumberOfAI": 3,
+      "NumberOfAIMax": 3,
+      "Behaviour": "PATROL",
+      "WaypointBehaviour": "LOOP",
+      "Formation": "COLUMN",
+      "Speed": "JOG",
+      "UnderThreatSpeed": "SPRINT",
+      "WaypointCompletionRadius": 16.0,
+      "ThreatDistanceRatio": 0.7,
+      "Chance": 1.0,
+      "RespawnTime": 180.0,
+      "Waypoints": [
+        [
+          9269.0,
+          0.0,
+          10826.0
+        ],
+        [
+          9271.0,
+          0.0,
+          10895.0
+        ],
+        [
+          9317.0,
+          0.0,
+          10961.0
+        ],
+        [
+          9271.0,
+          0.0,
+          10895.0
+        ],
+        [
+          9269.0,
+          0.0,
+          10826.0
+        ]
+      ]
+    }
+  ]
+}

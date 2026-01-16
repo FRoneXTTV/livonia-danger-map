@@ -1,0 +1,799 @@
+{
+    "m_Version": 4,
+    "RoamingLocations": [
+        {
+            "Name": "Local_Random_1",
+            "Position": [
+                6450.25341796875,
+                190.45523071289063,
+                11263.720703125
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_2",
+            "Position": [
+                10995.869140625,
+                191.28286743164063,
+                8994.3076171875
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_3",
+            "Position": [
+                3160.1884765625,
+                259.86895751953127,
+                11952.9775390625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_4",
+            "Position": [
+                1329.300048828125,
+                226.56654357910157,
+                8124.40966796875
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_5",
+            "Position": [
+                11625.3623046875,
+                213.3535919189453,
+                383.0599060058594
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_6",
+            "Position": [
+                3327.102294921875,
+                496.9228210449219,
+                2117.977294921875
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_7",
+            "Position": [
+                6190.24951171875,
+                181.52723693847657,
+                10966.14453125
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_8",
+            "Position": [
+                6252.66943359375,
+                179.9007110595703,
+                10444.0166015625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_9",
+            "Position": [
+                10870.123046875,
+                183.45346069335938,
+                10862.888671875
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_10",
+            "Position": [
+                4940.5693359375,
+                202.26438903808595,
+                9889.3837890625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_11",
+            "Position": [
+                9425.3291015625,
+                219.9837188720703,
+                10663.0888671875
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_12",
+            "Position": [
+                3351.1259765625,
+                487.21844482421877,
+                2015.372802734375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_13",
+            "Position": [
+                10988.015625,
+                186.69924926757813,
+                9023.1416015625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_14",
+            "Position": [
+                10416.5107421875,
+                183.9246826171875,
+                11162.4208984375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_15",
+            "Position": [
+                5093.31396484375,
+                189.98597717285157,
+                10142.431640625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_16",
+            "Position": [
+                1376.846435546875,
+                209.08021545410157,
+                7996.15234375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_17",
+            "Position": [
+                11600.4814453125,
+                188.13516235351563,
+                9468.9375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_18",
+            "Position": [
+                3100.17626953125,
+                235.74142456054688,
+                6808.78515625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_19",
+            "Position": [
+                5104.65625,
+                185.5361328125,
+                9819.560546875
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_20",
+            "Position": [
+                11043.3837890625,
+                174.7743682861328,
+                11237.9208984375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_21",
+            "Position": [
+                5964.16552734375,
+                382.5553283691406,
+                4327.26416015625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_22",
+            "Position": [
+                3950.722900390625,
+                205.71395874023438,
+                8092.60205078125
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_23",
+            "Position": [
+                5875.55322265625,
+                283.61810302734377,
+                6750.04833984375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_24",
+            "Position": [
+                10663.8017578125,
+                189.89654541015626,
+                10816.662109375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_25",
+            "Position": [
+                1609.6455078125,
+                216.68838500976563,
+                7142.80859375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_26",
+            "Position": [
+                1327.282470703125,
+                222.17733764648438,
+                8113.28515625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_27",
+            "Position": [
+                7862.68212890625,
+                368.79302978515627,
+                3788.298583984375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_28",
+            "Position": [
+                6545.8125,
+                184.93209838867188,
+                11216.9140625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_29",
+            "Position": [
+                6020.96337890625,
+                277.8078308105469,
+                6863.04443359375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_30",
+            "Position": [
+                10819.421875,
+                185.6409149169922,
+                10860.0
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_31",
+            "Position": [
+                12485.984375,
+                231.5052490234375,
+                8919.8447265625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_32",
+            "Position": [
+                9814.583984375,
+                366.30511474609377,
+                3806.134765625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_33",
+            "Position": [
+                10906.55859375,
+                174.6521759033203,
+                11124.8984375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_34",
+            "Position": [
+                8181.27001953125,
+                207.28428649902345,
+                10931.166015625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_35",
+            "Position": [
+                10908.1015625,
+                176.64930725097657,
+                11203.365234375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_36",
+            "Position": [
+                11389.314453125,
+                182.61802673339845,
+                9344.5390625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_37",
+            "Position": [
+                6979.34326171875,
+                192.15293884277345,
+                11875.9951171875
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_38",
+            "Position": [
+                1911.656005859375,
+                209.0754852294922,
+                7251.69677734375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_39",
+            "Position": [
+                9191.85546875,
+                201.79205322265626,
+                11012.740234375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_40",
+            "Position": [
+                11309.6435546875,
+                217.12814331054688,
+                669.5172729492188
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_41",
+            "Position": [
+                6287.4814453125,
+                183.84129333496095,
+                10362.7861328125
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_42",
+            "Position": [
+                3315.46728515625,
+                250.62937927246095,
+                12000.1943359375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_43",
+            "Position": [
+                3046.509033203125,
+                235.2434539794922,
+                6857.80712890625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_44",
+            "Position": [
+                3702.1337890625,
+                258.59747314453127,
+                11778.888671875
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_45",
+            "Position": [
+                2029.4122314453126,
+                186.97999572753907,
+                7576.517578125
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_46",
+            "Position": [
+                7299.15771484375,
+                230.36276245117188,
+                6339.09326171875
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_47",
+            "Position": [
+                3345.186767578125,
+                488.75714111328127,
+                2071.85400390625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_48",
+            "Position": [
+                9253.8154296875,
+                206.21267700195313,
+                10906.111328125
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_49",
+            "Position": [
+                10554.6806640625,
+                196.74716186523438,
+                10752.4130859375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_50",
+            "Position": [
+                6015.37060546875,
+                275.5845031738281,
+                6826.76025390625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_51",
+            "Position": [
+                4951.90087890625,
+                190.78363037109376,
+                9793.572265625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_52",
+            "Position": [
+                1252.966064453125,
+                186.69874572753907,
+                7365.22509765625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_53",
+            "Position": [
+                11558.3505859375,
+                187.96934509277345,
+                9810.232421875
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_54",
+            "Position": [
+                3939.932373046875,
+                195.33506774902345,
+                8430.3369140625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_55",
+            "Position": [
+                3730.036376953125,
+                252.3770751953125,
+                11796.0341796875
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_56",
+            "Position": [
+                12069.2919921875,
+                281.5782470703125,
+                4470.9765625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_57",
+            "Position": [
+                11446.1796875,
+                170.76776123046876,
+                10200.2353515625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_58",
+            "Position": [
+                3180.60693359375,
+                183.0,
+                8187.443359375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_59",
+            "Position": [
+                4832.82177734375,
+                352.7695617675781,
+                869.5390625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_60",
+            "Position": [
+                3225.889892578125,
+                183.0,
+                8221.357421875
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_61",
+            "Position": [
+                1993.6634521484376,
+                224.3959503173828,
+                7267.47021484375
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_62",
+            "Position": [
+                1635.113525390625,
+                182.06997680664063,
+                7451.0078125
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_63",
+            "Position": [
+                4949.58984375,
+                272.9366455078125,
+                7829.4853515625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_64",
+            "Position": [
+                1309.3487548828126,
+                197.6471710205078,
+                7254.0
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_65",
+            "Position": [
+                1224.684814453125,
+                216.3516387939453,
+                7981.40673828125
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_66",
+            "Position": [
+                6331.072265625,
+                181.90171813964845,
+                10439.7626953125
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_67",
+            "Position": [
+                1672.875,
+                262.6948547363281,
+                9695.416015625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_68",
+            "Position": [
+                1467.84765625,
+                274.04449462890627,
+                9767.59765625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_69",
+            "Position": [
+                819.9413452148438,
+                244.31553649902345,
+                5575.76416015625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_70",
+            "Position": [
+                6323.7353515625,
+                174.2406463623047,
+                10943.7138671875
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_71",
+            "Position": [
+                11115.1396484375,
+                346.8611145019531,
+                4345.9775390625
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        },
+        {
+            "Name": "Local_Random_72",
+            "Position": [
+                1964.01708984375,
+                219.07763671875,
+                7079.80419921875
+            ],
+            "Radius": 100.0,
+            "Type": "Local",
+            "Enabled": 1
+        }
+    ],
+    "ExcludedRoamingBuildings": [],
+    "NoGoAreas": []
+}
