@@ -87,13 +87,13 @@
 
   // Base tile layer
   const livoniaTiles = L.tileLayer("./tiles/{z}/{x}/{y}.jpg", {
-    minZoom: 0,
-    maxZoom: MAX_ZOOM,
-    tileSize: TILE_SIZE,
-    noWrap: true,
-    bounds: bounds,
-    tms: true
-  }).addTo(map);
+  minZoom: 0,
+  maxZoom: MAX_ZOOM,
+  tileSize: TILE_SIZE,
+  noWrap: true,
+  bounds: bounds
+}).addTo(map);
+
 
   // Optional grid
   const gridLayer = L.layerGroup();
