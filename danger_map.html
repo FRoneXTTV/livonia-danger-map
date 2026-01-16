@@ -136,12 +136,31 @@
   map.on("zoomend", () => map.panInsideBounds(bounds, { animate: false }));
 
   // ===== HELPERS =====
-  function pxToLatLng(x, z){ return map.unproject([x, z], MAX_NATIVE_ZOOM); }
+  /**
+   * IMPORTANT:
+   * Your input coordinates (x,z) in this file are DayZ world coordinates (meters),
+   * NOT image pixels. Livonia/Enoch world size is ~12800m.
+   * We must convert meters -> pixels on the 18000x18000 tile image.
+   */
+  const WORLD_SIZE = 12800;              // meters (0..12800)
+  const SCALE = MAP_SIZE / WORLD_SIZE;   // pixels per meter
 
-  function pxRadiusToMapRadius(centerX, centerZ, radiusPx){
-    const c = pxToLatLng(centerX, centerZ);
-    const edge = pxToLatLng(centerX + radiusPx, centerZ);
-    return c.distanceTo(edge);
+  // Convert DayZ meters to image pixels
+  function dzToPx(xMeters, zMeters) {
+    return [xMeters * SCALE, zMeters * SCALE];
+  }
+
+  // Convert DayZ meters to Leaflet LatLng (CRS.Simple)
+  function dzToLatLng(xMeters, zMeters) {
+    const [px, pz] = dzToPx(xMeters, zMeters);
+    return map.unproject([px, pz], MAX_NATIVE_ZOOM);
+  }
+
+  // Convert radius in meters -> radius in map units
+  function metersToMapRadius(centerXM, centerZM, radiusMeters) {
+    const c = dzToLatLng(centerXM, centerZM);
+    const e = dzToLatLng(centerXM + radiusMeters, centerZM);
+    return c.distanceTo(e);
   }
 
   function dangerLabel(tier) {
@@ -252,11 +271,12 @@
 
   // Faction zones + labels + heat
   function renderZone(z) {
-    const center = pxToLatLng(z.x, z.z);
+    const center = dzToLatLng(z.x, z.z);
 
     // zone (danger)
     L.circle(center, {
-      radius: pxRadiusToMapRadius(z.x, z.z, z.radius),
+      // User request: make zones x3 larger
+      radius: metersToMapRadius(z.x, z.z, z.radius * 3),
       color: z.color,
       weight: 2,
       opacity: 0.9,
@@ -283,10 +303,10 @@
     const steps = 7;
     for (let i=1; i<=steps; i++) {
       const k = i/steps;
-      const radiusPx = z.radius * (0.3 + 1.1*k);
+      const radiusMeters = (z.radius * 3) * (0.3 + 1.1*k);
       const opacity = (0.16 * intensity) * (1.0 - k*0.85);
       L.circle(center, {
-        radius: pxRadiusToMapRadius(z.x, z.z, radiusPx),
+        radius: metersToMapRadius(z.x, z.z, radiusMeters),
         color: z.color,
         weight: 0,
         opacity: 0,
@@ -300,12 +320,12 @@
 
   // Routes
   function renderRoute(r) {
-    const latlngs = r.points.map(p => pxToLatLng(p[0], p[1]));
+    const latlngs = r.points.map(p => dzToLatLng(p[0], p[1]));
     const style = Object.assign({ color: r.color }, r.style || {});
     L.polyline(latlngs, style).addTo(layerRoutes).bindTooltip(r.name);
     // endpoints
     r.points.forEach((p, idx) => {
-      L.circleMarker(pxToLatLng(p[0], p[1]), {
+      L.circleMarker(dzToLatLng(p[0], p[1]), {
         radius: idx === 0 ? 7 : 5,
         weight: 2,
         color: r.color,
@@ -325,7 +345,7 @@
   }
 
   function renderPOI(p) {
-    const ll = pxToLatLng(p.x, p.z);
+    const ll = dzToLatLng(p.x, p.z);
     const ic = poiIcon(p.type);
 
     L.circleMarker(ll, {
