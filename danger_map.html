@@ -13,7 +13,7 @@
     #map { height: 100%; }
     .city-label{font-weight:900;font-size:14px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.85);background:transparent;border:none;box-shadow:none;}
     .city-label.low{color:#b9ffcc;} .city-label.med{color:#ffd28a;} .city-label.ext{color:#ffb0b0;}
-    .legend{background:rgba(0,0,0,.75);color:#fff;padding:12px 14px;border-radius:12px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;font-size:14px;line-height:1.35;box-shadow:0 10px 30px rgba(0,0,0,.35);max-width:360px;}
+    .legend{background:rgba(0,0,0,.75);color:#fff;padding:12px 14px;border-radius:12px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;font-size:14px;line-height:1.35;box-shadow:0 10px 30px rgba(0,0,0,.35);max-width:380px;}
     .legend h3{margin:0 0 10px;font-size:15px;}
     .row{display:flex;align-items:center;gap:10px;margin:7px 0;}
     .dot{width:12px;height:12px;border-radius:50%;display:inline-block;}
@@ -24,19 +24,19 @@
 
 <script>
   // --- IMPORTANT SIZES ---
-  // DayZ world coordinates are 0..15360.
-  // Your TILE image is 18K, so pixel-space is 0..18000.
   const DAYZ_SIZE  = 15360;
-  const IMAGE_SIZE = 18000;
+  const IMAGE_SIZE = 18000;   // 18K tiles
   const SCALE = IMAGE_SIZE / DAYZ_SIZE;
 
-  // must match the folders you actually have in /tiles (0..5 or 0..6)
+  // MUST match your tiles folders: 0..5 or 0..6
   const MAX_ZOOM = 5;
   const TILE_SIZE = 256;
 
+  // If you still see many 404 with negative Y -> set true
+  const TMS_MODE = false;
+
   const COLORS = { WARDENS:"#2ecc71", RANGERS:"#ff9f1a", RAIDERS:"#ff3b30" };
 
-  // Leaflet CRS.Simple expects (y,x) order.
   const bounds = L.latLngBounds([[0,0],[IMAGE_SIZE, IMAGE_SIZE]]);
 
   const map = L.map("map", {
@@ -47,34 +47,33 @@
     maxBounds: bounds,
     maxBoundsViscosity: 1.0
   });
-
-  // Fit to full map
   map.fitBounds(bounds);
 
-  // Tiles (XYZ). If you still get negative y, set tms:true.
   const livoniaTiles = L.tileLayer("./tiles/{z}/{x}/{y}.jpg", {
     minZoom: 0,
     maxZoom: MAX_ZOOM,
     tileSize: TILE_SIZE,
     noWrap: true,
     bounds: bounds,
-    tms: true
+    tms: TMS_MODE
   }).addTo(map);
 
-  // Layers
+  // Convert DayZ coords (X/Z) -> tile coords (y,x)
+  function P(x, z){ return [z*SCALE, x*SCALE]; }
+
+  // ---- Layers ----
+  const cityLabelsLayer = L.layerGroup().addTo(map);
   const wardensLayer = L.layerGroup().addTo(map);
   const rangersLayer = L.layerGroup().addTo(map);
   const raidersLayer = L.layerGroup().addTo(map);
-  const cityLabelsLayer = L.layerGroup().addTo(map);
+  const patrolRoutesLayer = L.layerGroup().addTo(map);
+  const poiLayer = L.layerGroup().addTo(map);
 
   function labelClass(tier){
     if (tier==="LOW") return "city-label low";
     if (tier==="MEDIUM") return "city-label med";
     return "city-label ext";
   }
-
-  // Convert DayZ coords (X/Z) -> tile coords
-  function p(x, z){ return [z*SCALE, x*SCALE]; }
 
   const zones = [
     { name:"Brena", faction:"Blackwood Rangers", tier:"MEDIUM", color:COLORS.RANGERS, x:6467, z:11354, radius:500, ai:5 },
@@ -101,7 +100,7 @@
   }
 
   function renderZone(z, layer){
-    const center = p(z.x, z.z);
+    const center = P(z.x, z.z);
 
     L.circle(center, {
       radius: z.radius * SCALE,
@@ -131,12 +130,51 @@
     else renderZone(z, raidersLayer);
   });
 
-  // Layer toggles
+  // ---- Patrol Routes (toggle layer) ----
+  const ROUTES = {"Brena": [[6406, 11474], [6432, 11420], [6465, 11361], [6485, 11313], [6462, 11206], [6451, 11099], [6449, 10984], [6574, 11044], [6684, 11105], [6589, 11241], [6552, 11278], [6483, 11276], [6481, 11332], [6406, 11474]], "Sitnik": [[11228, 9523], [11318, 9569], [11419, 9620], [11547, 9640], [11599, 9648], [11634, 9604], [11599, 9648], [11547, 9640], [11419, 9620], [11318, 9569], [11228, 9523]], "Topolin": [[1866, 7367], [1708, 7331], [1594, 7304], [1525, 7414], [1582, 7450], [1780, 7507], [1810, 7492], [1848, 7444], [1906, 7450], [1942, 7462], [2004, 7445], [2017, 7406], [1866, 7367]], "Nadbor": [[5959, 4177], [6016, 4192], [6054, 4217], [6102, 4139], [5975, 4117], [5959, 4177]], "Tarnow": [[9269, 10826], [9271, 10895], [9317, 10961], [9271, 10895], [9269, 10826]], "Glinishka": [[4999, 9955], [5025, 9928], [5052, 9802], [5083, 9753], [5052, 9802], [5025, 9928], [4999, 9955]], "Zalesie": [[907, 5550], [866, 5509], [807, 5564], [866, 5509], [907, 5550]], "Lukow": [[3632, 11774], [3683, 11816], [3779, 11750], [3683, 11816], [3632, 11774]], "Polana": [[3360, 2018], [3363, 2092], [3360, 2018]]};
+  const BUNKER = [[541, 1097], [888, 1190]];
+
+  function addRoute(name, color, points){
+    const latlngs = points.map(pt => P(pt[0], pt[1]));
+    L.polyline(latlngs, {color: color, weight: 3, opacity: 0.95}).addTo(patrolRoutesLayer)
+      .bindPopup(`<b>Patrol Route</b><br/>${name}`);
+  }
+
+  // Rangers routes (orange)
+  ["Brena","Sitnik","Topolin","Nadbor"].forEach(n=> addRoute(n, COLORS.RANGERS, ROUTES[n]));
+  // Wardens routes (green)
+  ["Glinishka","Zalesie","Lukow","Polana","Tarnow"].filter(n=>ROUTES[n]).forEach(n=> addRoute(n, COLORS.WARDENS, ROUTES[n]));
+
+  // Bunker route (red dashed)
+  L.polyline(BUNKER.map(pt=>P(pt[0], pt[1])), {color: COLORS.RAIDERS, weight: 3, opacity: 0.95, dashArray:"8 10"})
+    .addTo(patrolRoutesLayer).bindPopup("<b>Bunker Patrol Route</b>");
+
+  // ---- POI markers (Police/Med) ----
+  const POI = {"Topolin": {"Med": [1922, 7381], "Police": [1516, 7407]}, "Nadbor": {"Med": [6066, 4198], "Police": [5959, 4114]}};
+  function addPOI(city, type, x, z){
+    const icon = L.divIcon({
+      className: "",
+      html: `<div style="background:rgba(0,0,0,.75);border:2px solid #fff;border-radius:10px;padding:2px 6px;font-weight:900;color:#fff;font-size:12px">${type}</div>`,
+      iconSize: [60, 18],
+      iconAnchor: [30, 9]
+    });
+    L.marker(P(x,z), {icon}).addTo(poiLayer).bindPopup(`<b>${city}</b> – ${type}<br/>X${x} Z${z}`);
+  }
+  Object.keys(POI).forEach(city=>{
+    Object.keys(POI[city]).forEach(t=>{
+      const p=POI[city][t];
+      addPOI(city, t, p[0], p[1]);
+    });
+  });
+
+  // ---- Controls ----
   const overlays = {
     "🏷️ City Names (labels)": cityLabelsLayer,
     "🟢 Livonian Wardens (LOW)": wardensLayer,
     "🟠 Blackwood Rangers (MEDIUM)": rangersLayer,
-    "🔴 Ironfang Raiders (EXTREME / Bunker)": raidersLayer
+    "🔴 Ironfang Raiders (EXTREME / Bunker)": raidersLayer,
+    "🧭 Patrol Routes": patrolRoutesLayer,
+    "📍 POI (Police/Med)": poiLayer
   };
   L.control.layers({}, overlays, {collapsed:false}).addTo(map);
 
@@ -148,7 +186,9 @@
     <div class="row"><span class="dot" style="background:${COLORS.WARDENS}"></span><div><b>Livonian Wardens</b><br/>LOW threat</div></div>
     <div class="row"><span class="dot" style="background:${COLORS.RANGERS}"></span><div><b>Blackwood Rangers</b><br/>MEDIUM threat</div></div>
     <div class="row"><span class="dot" style="background:${COLORS.RAIDERS}"></span><div><b>Ironfang Raiders</b><br/>EXTREME threat</div></div>
-    <div style="opacity:.85;font-size:12px;margin-top:10px">If tiles still 404 with negative Y, set <b>tms:true</b>.</div>`;
+    <div style="opacity:.85;font-size:12px;margin-top:10px">
+      If map is gray and Network shows requests like <b>-36.jpg</b> (404) → set <b>TMS_MODE = true</b>.
+    </div>`;
     return div;
   };
   legend.addTo(map);
